@@ -1,0 +1,4 @@
+../lvgl/src/draw/sw/lv_draw_sw_layer.c:45:31:lv_draw_sw_layer_create	6
+../lvgl/src/draw/sw/lv_draw_sw_layer.c:88:6:lv_draw_sw_layer_adjust	2
+../lvgl/src/draw/sw/lv_draw_sw_layer.c:106:6:lv_draw_sw_layer_blend	1
+../lvgl/src/draw/sw/lv_draw_sw_layer.c:128:6:lv_draw_sw_layer_destroy	1

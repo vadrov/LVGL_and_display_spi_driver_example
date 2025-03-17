@@ -1,0 +1,16 @@
+../lvgl/src/widgets/meter/lv_meter.c:266:13:lv_meter_destructor	0	static
+../lvgl/src/widgets/meter/lv_meter.c:244:13:lv_meter_constructor	8	static
+../lvgl/src/widgets/meter/lv_meter.c:606:13:inv_arc	80	static
+../lvgl/src/widgets/meter/lv_meter.c:634:13:inv_line	72	static
+../lvgl/src/widgets/meter/lv_meter.c:275:13:lv_meter_event	392	static
+../lvgl/src/widgets/meter/lv_meter.c:54:12:lv_meter_create	8	static
+../lvgl/src/widgets/meter/lv_meter.c:66:6:lv_meter_set_scale_ticks	0	static
+../lvgl/src/widgets/meter/lv_meter.c:77:6:lv_meter_set_scale_major_ticks	0	static
+../lvgl/src/widgets/meter/lv_meter.c:89:6:lv_meter_set_scale_range	0	static
+../lvgl/src/widgets/meter/lv_meter.c:104:24:lv_meter_add_needle_line	24	static
+../lvgl/src/widgets/meter/lv_meter.c:123:24:lv_meter_add_needle_img	24	static
+../lvgl/src/widgets/meter/lv_meter.c:142:24:lv_meter_add_arc	24	static
+../lvgl/src/widgets/meter/lv_meter.c:161:24:lv_meter_add_scale_lines	32	static
+../lvgl/src/widgets/meter/lv_meter.c:185:6:lv_meter_set_indicator_value	24	static
+../lvgl/src/widgets/meter/lv_meter.c:206:6:lv_meter_set_indicator_start_value	16	static
+../lvgl/src/widgets/meter/lv_meter.c:223:6:lv_meter_set_indicator_end_value	16	static

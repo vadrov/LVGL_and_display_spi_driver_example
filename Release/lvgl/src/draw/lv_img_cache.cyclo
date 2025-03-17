@@ -1,0 +1,5 @@
+../lvgl/src/draw/lv_img_cache.c:37:6:lv_img_cache_manager_init	2
+../lvgl/src/draw/lv_img_cache.c:43:6:lv_img_cache_manager_apply	2
+../lvgl/src/draw/lv_img_cache.c:49:25:_lv_img_cache_open	2
+../lvgl/src/draw/lv_img_cache.c:55:6:lv_img_cache_set_size	2
+../lvgl/src/draw/lv_img_cache.c:61:6:lv_img_cache_invalidate_src	2

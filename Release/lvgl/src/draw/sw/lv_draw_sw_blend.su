@@ -1,0 +1,5 @@
+../lvgl/src/draw/sw/lv_draw_sw_blend.c:831:26:color_blend_true_color_additive	20	static
+../lvgl/src/draw/sw/lv_draw_sw_blend.c:876:26:color_blend_true_color_subtractive	20	static
+../lvgl/src/draw/sw/lv_draw_sw_blend.c:895:26:color_blend_true_color_multiply	20	static
+../lvgl/src/draw/sw/lv_draw_sw_blend.c:78:6:lv_draw_sw_blend	24	static
+../lvgl/src/draw/sw/lv_draw_sw_blend.c:91:28:lv_draw_sw_blend_basic	104	static

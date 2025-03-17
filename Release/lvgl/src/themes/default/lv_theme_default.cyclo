@@ -1,0 +1,6 @@
+../lvgl/src/themes/default/lv_theme_default.c:700:13:theme_apply	42
+../lvgl/src/themes/default/lv_theme_default.c:192:19:dark_color_filter_cb	1
+../lvgl/src/themes/default/lv_theme_default.c:198:19:grey_filter_cb	2
+../lvgl/src/themes/default/lv_theme_default.c:650:14:lv_theme_default_init	273
+../lvgl/src/themes/default/lv_theme_default.c:685:14:lv_theme_default_get	1
+../lvgl/src/themes/default/lv_theme_default.c:694:6:lv_theme_default_is_inited	1
