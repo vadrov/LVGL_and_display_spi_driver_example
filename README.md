@@ -61,8 +61,7 @@ void lv_user_proc(void)
     lv_anim_start(&a);
 }
 ```
-https://github.com/vadrov/LVGL_and_display_spi_driver_example/blob/main/VID_20250317_162448.mp4
-
+https://github.com/user-attachments/assets/5154f9e5-ddf6-4519-a6b3-9c39822ee3d2
 Author: **VadRov**\
 Contacts: [Youtube](https://www.youtube.com/@VadRov) [Dzen](https://dzen.ru/vadrov) [VK](https://vk.com/vadrov) [Telegram](https://t.me/vadrov_channel)\
 Donate: [donate.yoomoney](https://yoomoney.ru/to/4100117522443917)
