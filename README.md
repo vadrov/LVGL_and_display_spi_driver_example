@@ -57,59 +57,56 @@ static uint32_t my_tick_cb(void)
 int main(void)
 {
     ...
- LCD_DMA_TypeDef dma_tx = { DMA2,
-  		  	  	  	  	     2,   };
-  LCD_BackLight_data bkl_data = { TIM3,
-		  	  	  	  	  	  	  TIM_CCER_CC1E,
-  								  0,
-  								  0,
-  								  90  };
-  LCD_SPI_Connected_data spi_con = { SPI1,
-  		  	  	  	  	  	  	  	 dma_tx,
-  									 LCD_RES_GPIO_Port,
-  									 LCD_RES_Pin,
-  									 LCD_DC_GPIO_Port,
-  									 LCD_DC_Pin,
-  									 LCD_CS_GPIO_Port,
-  									 LCD_CS_Pin         };
+    LCD_DMA_TypeDef dma_tx = { DMA2, 2 };
+    LCD_BackLight_data bkl_data = { TIM3,
+                                    TIM_CCER_CC1E,
+                                    0,
+                                    0,
+                                    90  };
+    LCD_SPI_Connected_data spi_con = { SPI1,
+                                       dma_tx,
+                                       LCD_RES_GPIO_Port,
+                                       LCD_RES_Pin,
+                                       LCD_DC_GPIO_Port,
+                                       LCD_DC_Pin,
+                                       LCD_CS_GPIO_Port,
+                                       LCD_CS_Pin };
 
-  LCD = LCD_DisplayAdd(LCD,
-   	   	   	   		   DISP_HOR_RES,
-					   DISP_VER_RES,
+    LCD = LCD_DisplayAdd(LCD,
+                         DISP_HOR_RES,
+                         DISP_VER_RES,
 #if ACTIVE_DISPLAY == ILI9341
-					   ILI9341_CONTROLLER_WIDTH,
-					   ILI9341_CONTROLLER_HEIGHT,
+                         ILI9341_CONTROLLER_WIDTH,
+                         ILI9341_CONTROLLER_HEIGHT,
 #elif ACTIVE_DISPLAY == ST7789
-					 ST7789_CONTROLLER_WIDTH,
-					 ST7789_CONTROLLER_HEIGHT,
+                         ST7789_CONTROLLER_WIDTH,
+                         ST7789_CONTROLLER_HEIGHT,
 #endif
-					   0,
-					   0,
-					   PAGE_ORIENTATION_LANDSCAPE,
+                         0,
+                         0,
+                         PAGE_ORIENTATION_LANDSCAPE,
 #if ACTIVE_DISPLAY == ILI9341
-					   ILI9341_Init,
-					   ILI9341_SetWindow,
-					   ILI9341_SleepIn,
-					   ILI9341_SleepOut,
+                         ILI9341_Init,
+                         ILI9341_SetWindow,
+                         ILI9341_SleepIn,
+                         ILI9341_SleepOut,
 #elif ACTIVE_DISPLAY == ST7789
-					   ST7789_Init,
-					   ST7789_SetWindow,
-					   ST7789_SleepIn,
-					   ST7789_SleepOut,
+                         ST7789_Init,
+                         ST7789_SetWindow,
+                         ST7789_SleepIn,
+                         ST7789_SleepOut,
 #endif
-					   &spi_con,
-					   LCD_DATA_16BIT_BUS,
-					   bkl_data				   );
-  LCD_Init(LCD);
-
-  lv_init();
-  lv_tick_set_cb(my_tick_cb);
-  lv_display_t * display1 = lv_display_create(DISP_HOR_RES, DISP_VER_RES);
-  lv_display_set_buffers(display1, buf1, buf2, DISP_HOR_RES * 10, LV_DISPLAY_RENDER_MODE_PARTIAL);
-  lv_display_set_flush_cb(display1, my_flush_cb);
-
-  ui_init();
-  while (1) { //infinity loop
+                         &spi_con,
+                         LCD_DATA_16BIT_BUS,
+                         bkl_data );
+    LCD_Init(LCD);
+    lv_init();
+    lv_tick_set_cb(my_tick_cb);
+    lv_display_t * display1 = lv_display_create(DISP_HOR_RES, DISP_VER_RES);
+    lv_display_set_buffers(display1, buf1, buf2, DISP_HOR_RES * 10 * BYTES_PER_PIXEL, LV_DISPLAY_RENDER_MODE_PARTIAL);
+    lv_display_set_flush_cb(display1, my_flush_cb);
+    ui_init();
+    while (1) { //infinity loop
         lv_timer_handler();
     }
 }
