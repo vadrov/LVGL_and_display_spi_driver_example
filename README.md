@@ -10,6 +10,9 @@ See display driver: https://github.com/vadrov/stm32-display-spi-dma
 
 Define display options in main.c file:
 ```c
+#define	ILI9341	0		//do not edit!!!
+#define ST7789	1		//do not edit!!!
+
 /* user options */
 #define ACTIVE_DISPLAY	ILI9341 //select active display driver
 #define DISP_HOR_RES	320		//select display resolution
