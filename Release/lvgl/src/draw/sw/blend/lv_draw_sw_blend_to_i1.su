@@ -1,0 +1,2 @@
+../lvgl/src/draw/sw/blend/lv_draw_sw_blend_to_i1.c:203:28:lv_draw_sw_blend_color_to_i1	64	static
+../lvgl/src/draw/sw/blend/lv_draw_sw_blend_to_i1.c:309:28:lv_draw_sw_blend_image_to_i1	96	static

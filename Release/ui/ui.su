@@ -1,0 +1,3 @@
+../ui/ui.c:41:6:loadScreen	16	static
+../ui/ui.c:47:6:ui_init	16	static
+../ui/ui.c:52:6:ui_tick	0	static

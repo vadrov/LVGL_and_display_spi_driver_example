@@ -1,0 +1,5 @@
+../ui/screens.c:40:6:tick_screen_main	0	static
+../ui/screens.c:16:6:create_screen_main	16	static
+../ui/screens.c:49:6:tick_screen	0	static
+../ui/screens.c:52:6:tick_screen_by_id	0	static
+../ui/screens.c:56:6:create_screens	24	static

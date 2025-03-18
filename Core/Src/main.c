@@ -176,7 +176,7 @@ int main(void)
   lv_init();
   lv_tick_set_cb(my_tick_cb);
   lv_display_t * display1 = lv_display_create(DISP_HOR_RES, DISP_VER_RES);
-  lv_display_set_buffers(display1, buf1, buf2, DISP_HOR_RES * 10, LV_DISPLAY_RENDER_MODE_PARTIAL);
+  lv_display_set_buffers(display1, buf1, buf2, DISP_HOR_RES * 10 * BYTES_PER_PIXEL, LV_DISPLAY_RENDER_MODE_PARTIAL);
   lv_display_set_flush_cb(display1, my_flush_cb);
 
   ui_init();

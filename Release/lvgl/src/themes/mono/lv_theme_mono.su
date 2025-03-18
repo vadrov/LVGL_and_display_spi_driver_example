@@ -1,0 +1,4 @@
+../lvgl/src/themes/mono/lv_theme_mono.c:232:13:theme_apply	24	static
+../lvgl/src/themes/mono/lv_theme_mono.c:183:6:lv_theme_mono_is_inited	0	static
+../lvgl/src/themes/mono/lv_theme_mono.c:190:6:lv_theme_mono_deinit	16	static
+../lvgl/src/themes/mono/lv_theme_mono.c:206:14:lv_theme_mono_init	104	static
