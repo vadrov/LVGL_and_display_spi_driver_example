@@ -12,8 +12,8 @@ Define display options in main.c file:
 ```c
 /* user options */
 #define ACTIVE_DISPLAY	ILI9341 //select active display driver
-#define DISP_HOR_RES	240		//select display resolution
-#define DISP_VER_RES	320
+#define DISP_HOR_RES	320		//select display resolution
+#define DISP_VER_RES	240
 ```
 Initialize the display driver and LVGL in main.c:
 ```c
