@@ -39,9 +39,9 @@ volatile uint32_t millis = 0; //ms system counter (increases in SysTick interrup
 //display render callback
 void my_flush_cb(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
-	int w = area->x2 - area->x1 + 1;
-	int h = area->y2 - area->y1 + 1;
-	LCD_DrawImage(LCD, area->x1, area->y1, w, h, (uint16_t*)px_map, 1);
+    int w = area->x2 - area->x1 + 1;
+    int h = area->y2 - area->y1 + 1;
+    LCD_DrawImage(LCD, area->x1, area->y1, w, h, (uint16_t*)px_map, 1);
     lv_display_flush_ready(display);
 }
 
