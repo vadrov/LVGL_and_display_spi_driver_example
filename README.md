@@ -17,6 +17,7 @@ Define display options in main.c file:
 ```
 Initialize the display driver and LVGL in main.c:
 ```c
+#include "main.h"
 #include "display.h"
 #if ACTIVE_DISPLAY == ILI9341
 #include "ili9341.h"
