@@ -29,7 +29,6 @@ Initialize the display driver and LVGL in main.c:
 #endif
 #include <stdlib.h>
 #include "../../lvgl/lvgl.h"
-#include "../../lvgl/examples/lv_examples.h"
 #include "ui.h"
 
 #define BYTES_PER_PIXEL (LV_COLOR_FORMAT_GET_SIZE(LV_COLOR_FORMAT_RGB565))
