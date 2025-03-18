@@ -418,7 +418,6 @@ int main(int arg, char ** argv)
 }
 #endif
 
-
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 ////
@@ -590,7 +589,6 @@ STBTT_DEF void stbtt_GetBakedQuad(const stbtt_bakedchar * chardata, int pw, int 
 //
 // It's inefficient; you might want to c&p it and optimize it.
 
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // NEW TEXTURE BAKING API
@@ -604,10 +602,22 @@ typedef struct {
     float xoff2, yoff2;
 } stbtt_packedchar;
 
+/// @cond
+/**
+ *  Tells Doxygen to ignore a duplicate declaration
+ */
 typedef struct stbtt_pack_context stbtt_pack_context;
 typedef struct stbtt_fontinfo stbtt_fontinfo;
+/// @endcond
+
 #ifndef STB_RECT_PACK_VERSION
+/// @cond
+/**
+ *  Tells Doxygen to ignore a duplicate declaration
+ */
 typedef struct stbrp_rect stbrp_rect;
+/// @endcond
+
 #endif
 STBTT_DEF int  stbtt_PackBegin(stbtt_pack_context * spc, unsigned char * pixels, int width, int height,
                                int stride_in_bytes, int padding, void * alloc_context);
@@ -656,7 +666,7 @@ STBTT_DEF void stbtt_PackSetOversampling(stbtt_pack_context * spc, unsigned int 
 STBTT_DEF void stbtt_PackSetSkipMissingCodepoints(stbtt_pack_context * spc, int skip);
 // If skip != 0, this tells stb_truetype to skip any codepoints for which
 // there is no corresponding glyph. If skip=0, which is the default, then
-// codepoints without a glyph recived the font's "missing character" glyph,
+// codepoints without a glyph received the font's "missing character" glyph,
 // typically an empty box by convention.
 
 STBTT_DEF void stbtt_GetPackedQuad(const stbtt_packedchar * chardata, int pw, int ph, // same data as above
@@ -757,7 +767,6 @@ STBTT_DEF int stbtt_InitFont(stbtt_fontinfo * info, const unsigned char * data, 
 // need to do anything special to free it, because the contents are pure
 // value data with no additional data structures. Returns 0 on failure.
 
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // CHARACTER TO GLYPH-INDEX CONVERSIOn
@@ -768,7 +777,6 @@ STBTT_DEF int stbtt_FindGlyphIndex(const stbtt_fontinfo * info, int unicode_code
 // going to process, then use glyph-based functions instead of the
 // codepoint-based functions.
 // Returns 0 if the character codepoint is not defined in the font.
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -824,7 +832,7 @@ STBTT_DEF int  stbtt_GetGlyphKernAdvance(const stbtt_fontinfo * info, int glyph1
 STBTT_DEF int  stbtt_GetGlyphBox(const stbtt_fontinfo * info, int glyph_index, int * x0, int * y0, int * x1, int * y1);
 // as above, but takes one or more glyph indices for greater efficiency
 
-typedef struct stbtt_kerningentry {
+typedef struct _stbtt_kerningentry {
     int glyph1; // use stbtt_FindGlyphIndex
     int glyph2;
     int advance;
@@ -904,7 +912,7 @@ STBTT_DEF unsigned char * stbtt_GetCodepointBitmap(const stbtt_fontinfo * info, 
 
 STBTT_DEF unsigned char * stbtt_GetCodepointBitmapSubpixel(const stbtt_fontinfo * info, float scale_x, float scale_y,
                                                            float shift_x, float shift_y, int codepoint, int * width, int * height, int * xoff, int * yoff);
-// the same as stbtt_GetCodepoitnBitmap, but you can specify a subpixel
+// the same as stbtt_GetCodepointBitmap, but you can specify a subpixel
 // shift for the character
 
 STBTT_DEF void stbtt_MakeCodepointBitmap(const stbtt_fontinfo * info, unsigned char * output, int out_w, int out_h,
@@ -955,7 +963,6 @@ STBTT_DEF void stbtt_GetGlyphBitmapBox(const stbtt_fontinfo * font, int glyph, f
                                        int * iy0, int * ix1, int * iy1);
 STBTT_DEF void stbtt_GetGlyphBitmapBoxSubpixel(const stbtt_fontinfo * font, int glyph, float scale_x, float scale_y,
                                                float shift_x, float shift_y, int * ix0, int * iy0, int * ix1, int * iy1);
-
 
 // @TODO: don't expose this structure
 typedef struct {
@@ -1031,8 +1038,6 @@ STBTT_DEF unsigned char * stbtt_GetCodepointSDF(const stbtt_fontinfo * info, flo
 //
 // The algorithm has not been optimized at all, so expect it to be slow
 // if computing lots of characters or very large sizes.
-
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1361,7 +1366,6 @@ static stbtt__buf stbtt__cff_index_get(stbtt__buf b, int i)
 
 // on platforms that don't allow misaligned reads, if we want to allow
 // truetype fonts that aren't padded to alignment, define ALLOW_UNALIGNED_TRUETYPE
-
 
 #ifdef STBTT_STREAM_TYPE
 static stbtt_uint8 ttBYTE(STBTT_STREAM_TYPE s, stbtt_uint32 offset)
@@ -2850,7 +2854,47 @@ static stbtt_int32 stbtt__GetGlyphGPOSInfoAdvance(const stbtt_fontinfo * info, i
             }
         }
     }
+    return 0;
+}
 
+STBTT_DEF int stbtt_KernTableCheck(const stbtt_fontinfo * info)
+{
+    if(info->gpos) {
+        stbtt_uint16 lookupListOffset;
+        stbtt_uint32 lookupList;
+        stbtt_uint16 lookupCount;
+#ifdef STBTT_STREAM_TYPE
+        STBTT_STREAM_TYPE data = info->data;
+#else
+        const stbtt_uint8 * data = info->data;
+#endif
+        stbtt_int32 i;
+
+        if(!info->gpos) return 0;
+
+        if(ttUSHORT(data, 0 + info->gpos) != 1) return 0;  // Major version 1
+        if(ttUSHORT(data, 2 + info->gpos) != 0) return 0;  // Minor version 0
+
+        lookupListOffset = ttUSHORT(data, 8 + info->gpos);
+        lookupList = lookupListOffset;
+        lookupCount = ttUSHORT(data, lookupList);
+
+        for(i = 0; i < lookupCount; ++i) {
+            stbtt_uint16 lookupOffset = ttUSHORT(data, lookupList + 2 + 2 * i);
+            stbtt_uint32 lookupTable = lookupList + lookupOffset;
+
+            stbtt_uint16 lookupType = ttUSHORT(data, lookupTable);
+
+            if(lookupType != 2)  // Pair Adjustment Positioning Subtable
+                continue;
+
+            return 1; // we have a usable lookup table.
+        }
+        return 0;
+    }
+    else if(info->kern) {
+        return 1;
+    }
     return 0;
 }
 
@@ -3062,7 +3106,6 @@ typedef struct stbtt__edge {
     float x0, y0, x1, y1;
     int invert;
 } stbtt__edge;
-
 
 typedef struct stbtt__active_edge {
     struct stbtt__active_edge * next;
@@ -4625,7 +4668,6 @@ STBTT_DEF int stbtt_PackFontRanges(stbtt_pack_context * spc, const unsigned char
                                    stbtt_pack_range * ranges, int num_ranges);
 #endif
 
-
 STBTT_DEF void stbtt_PackFontRangesPackRects(stbtt_pack_context * spc, stbrp_rect * rects, int num_rects)
 {
     stbrp_pack_rects((stbrp_context *)spc->pack_info, rects, num_rects);
@@ -4699,7 +4741,6 @@ STBTT_DEF int stbtt_PackFontRange(stbtt_pack_context * spc, const unsigned char 
     return stbtt_PackFontRanges(spc, fontdata, font_index, &range, 1);
 }
 
-
 #ifdef STBTT_STREAM_TYPE
 STBTT_DEF void stbtt_GetScaledFontVMetrics(STBTT_STREAM_TYPE fontdata, int index, float size, float * ascent,
                                            float * descent, float * lineGap);
@@ -4707,7 +4748,6 @@ STBTT_DEF void stbtt_GetScaledFontVMetrics(STBTT_STREAM_TYPE fontdata, int index
 STBTT_DEF void stbtt_GetScaledFontVMetrics(const unsigned char * fontdata, int index, float size, float * ascent,
                                            float * descent, float * lineGap);
 #endif
-
 
 #ifdef STBTT_STREAM_TYPE
 STBTT_DEF void stbtt_GetScaledFontVMetrics(STBTT_STREAM_TYPE fontdata, int index, float size, float * ascent,
@@ -5360,7 +5400,6 @@ static int stbtt__matchpair(stbtt_uint8 * fc, stbtt_uint32 nm, stbtt_uint8 * nam
     #pragma GCC diagnostic ignored "-Wcast-qual"
 #endif
 
-
 #ifdef STBTT_STREAM_TYPE
 STBTT_DEF int stbtt_BakeFontBitmap(STBTT_STREAM_TYPE data, int offset,
                                    float pixel_height, unsigned char * pixels, int pw, int ph,
@@ -5452,7 +5491,6 @@ STBTT_DEF int stbtt_CompareUTF8toUTF16_bigendian(const char * s1, int len1, cons
 #endif
 
 #endif // STB_TRUETYPE_IMPLEMENTATION
-
 
 // FULL VERSION HISTORY
 //

@@ -1,5 +1,5 @@
 /**
- * @file lv_barcode.c
+ * @file lv_barcode.h
  *
  */
 
@@ -13,7 +13,11 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../../../lvgl.h"
+#include "../../lv_conf_internal.h"
+#include "../../misc/lv_types.h"
+#include "../../misc/lv_color.h"
+#include "../../widgets/canvas/lv_canvas.h"
+
 #if LV_USE_BARCODE
 
 /*********************
@@ -24,15 +28,7 @@ extern "C" {
  *      TYPEDEFS
  **********************/
 
-/*Data of barcode*/
-typedef struct {
-    lv_canvas_t canvas;
-    lv_color_t dark_color;
-    lv_color_t light_color;
-    uint16_t scale;
-} lv_barcode_t;
-
-extern const lv_obj_class_t lv_barcode_class;
+LV_ATTRIBUTE_EXTERN_DATA extern const lv_obj_class_t lv_barcode_class;
 
 /**********************
  * GLOBAL PROTOTYPES
@@ -67,12 +63,26 @@ void lv_barcode_set_light_color(lv_obj_t * obj, lv_color_t color);
 void lv_barcode_set_scale(lv_obj_t * obj, uint16_t scale);
 
 /**
+ * Set the direction of a barcode object
+ * @param obj pointer to barcode object
+ * @param direction draw direction (`LV_DIR_HOR` or `LB_DIR_VER`)
+ */
+void lv_barcode_set_direction(lv_obj_t * obj, lv_dir_t direction);
+
+/**
+ * Set the tiled mode of a barcode object
+ * @param obj pointer to barcode object
+ * @param tiled true: tiled mode, false: normal mode (default)
+ */
+void lv_barcode_set_tiled(lv_obj_t * obj, bool tiled);
+
+/**
  * Set the data of a barcode object
  * @param obj pointer to barcode object
  * @param data data to display
- * @return LV_RES_OK: if no error; LV_RES_INV: on error
+ * @return LV_RESULT_OK: if no error; LV_RESULT_INVALID: on error
  */
-lv_res_t lv_barcode_update(lv_obj_t * obj, const char * data);
+lv_result_t lv_barcode_update(lv_obj_t * obj, const char * data);
 
 /**
  * Get the dark color of a barcode object

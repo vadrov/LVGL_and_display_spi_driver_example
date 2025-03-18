@@ -1,3 +1,0 @@
-../Core/Src/lcd_lvgl.c:23:6:monitor_cb	1
-../Core/Src/lcd_lvgl.c:29:13:tft_flush	5
-../Core/Src/lcd_lvgl.c:42:6:Display_init	1

@@ -24,7 +24,6 @@
 /* USER CODE BEGIN Includes */
 #include "display.h"
 #include "../../lvgl/lvgl.h"
-#include "lcd_lvgl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

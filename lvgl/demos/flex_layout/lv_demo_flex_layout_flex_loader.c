@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file lv_demo_flex_layout_flex_loader.c
  *
  */
@@ -9,7 +9,7 @@
 
 #include "lv_demo_flex_layout_main.h"
 
-#if LV_USE_DEMO_FLEX_LAYOUT && LV_USE_USER_DATA
+#if LV_USE_DEMO_FLEX_LAYOUT
 
 /*********************
  *      DEFINES
@@ -33,7 +33,7 @@
         for (i = 0; i < ARRAY_SIZE(flex_align_map); i++) {                            \
             if (flex_align == flex_align_map[i]) {                                    \
                 lv_dropdown_set_selected(ui->ctrl_pad.tab.align.ddlist_align_##item,  \
-                                         i);                                          \
+                                         i, LV_ANIM_OFF);                             \
                 break;                                                                \
             }                                                                         \
         }                                                                             \
@@ -114,7 +114,7 @@ void flex_loader_obj_update(lv_obj_t * obj, view_t * ui)
     uint32_t i;
     for(i = 0; i < ARRAY_SIZE(flex_flow_map); i++) {
         if(flex_flow == flex_flow_map[i]) {
-            lv_dropdown_set_selected(ui->ctrl_pad.tab.flex.ddlist_flow, i);
+            lv_dropdown_set_selected(ui->ctrl_pad.tab.flex.ddlist_flow, i, LV_ANIM_OFF);
             break;
         }
     }

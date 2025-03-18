@@ -6,21 +6,35 @@ import shutil
 import subprocess
 import sys
 import os
+import platform
 from itertools import chain
+from pathlib import Path
 
 lvgl_test_dir = os.path.dirname(os.path.realpath(__file__))
+lvgl_script_path = os.path.join(lvgl_test_dir, "../scripts")
+sys.path.append(lvgl_script_path)
+
+wayland_dir = os.path.join(lvgl_test_dir, "wayland_protocols")
+wayland_protocols_dir = os.path.realpath("/usr/share/wayland-protocols")
+
+from LVGLImage import LVGLImage, ColorFormat, CompressMethod
 
 # Key values must match variable names in CMakeLists.txt.
 build_only_options = {
-    'OPTIONS_MINIMAL_MONOCHROME': 'Minimal config monochrome',
-    'OPTIONS_NORMAL_8BIT': 'Normal config, 8 bit color depth',
+#    'OPTIONS_NORMAL_8BIT': 'Normal config, 8 bit color depth',
     'OPTIONS_16BIT': 'Minimal config, 16 bit color depth',
+    'OPTIONS_24BIT': 'Normal config, 24 bit color depth',
     'OPTIONS_FULL_32BIT': 'Full config, 32 bit color depth',
+    'OPTIONS_VG_LITE': 'VG-Lite simulator with full config, 32 bit color depth',
 }
+
+if platform.system() != 'Windows':
+    build_only_options['OPTIONS_SDL'] = 'SDL simulator with full config, 32 bit color depth'
 
 test_options = {
     'OPTIONS_TEST_SYSHEAP': 'Test config, system heap, 32 bit color depth',
     'OPTIONS_TEST_DEFHEAP': 'Test config, LVGL heap, 32 bit color depth',
+    'OPTIONS_TEST_VG_LITE': 'VG-Lite simulator with full config, 32 bit color depth',
 }
 
 
@@ -45,7 +59,7 @@ def options_abbrev(options_name):
     return options_name[len(prefix):].lower()
 
 
-def get_base_buid_dir(options_name):
+def get_base_build_dir(options_name):
     '''Given the build options name, return the build directory name.
 
     Does not return the full path to the directory - just the base name.'''
@@ -57,8 +71,39 @@ def get_build_dir(options_name):
 
     Returns absolute path to the build directory.'''
     global lvgl_test_dir
-    return os.path.join(lvgl_test_dir, get_base_buid_dir(options_name))
+    return os.path.join(lvgl_test_dir, get_base_build_dir(options_name))
 
+def gen_wayland_protocols(clean):
+    '''Generates the xdg shell interface from wayland protocol definitions'''
+
+    if clean:
+        delete_dir_ignore_missing(wayland_dir)
+
+    if not os.path.isdir(wayland_dir):
+        os.mkdir(wayland_dir)
+        subprocess.check_call(['wayland-scanner',
+            'client-header',
+            os.path.join(wayland_protocols_dir, "stable/xdg-shell/xdg-shell.xml"),
+            os.path.join(wayland_dir, "wayland_xdg_shell.h.original"),
+        ])
+
+        subprocess.check_call(['wayland-scanner',
+            'private-code',
+            os.path.join(wayland_protocols_dir, "stable/xdg-shell/xdg-shell.xml"),
+            os.path.join(wayland_dir, "wayland_xdg_shell.c.original"),
+        ])
+
+        # Insert guards
+        with open(os.path.join(wayland_dir, "wayland_xdg_shell.h"), "w") as outfile:
+            subprocess.check_call(['sed','-e', "1i #if LV_BUILD_TEST", '-e', '$a #endif',
+                os.path.join(wayland_dir, "wayland_xdg_shell.h.original")], stdout=outfile)
+
+        with open(os.path.join(wayland_dir, "wayland_xdg_shell.c"), "w") as outfile:
+            subprocess.check_call(['sed','-e', "1i #if LV_BUILD_TEST", '-e', '$a #endif',
+                os.path.join(wayland_dir, "wayland_xdg_shell.c.original")], stdout=outfile)
+
+        subprocess.check_call(['rm', os.path.join(wayland_dir, "wayland_xdg_shell.c.original")])
+        subprocess.check_call(['rm', os.path.join(wayland_dir, "wayland_xdg_shell.h.original")])
 
 def build_tests(options_name, build_type, clean):
     '''Build all tests for the specified options name.'''
@@ -78,19 +123,23 @@ def build_tests(options_name, build_type, clean):
         delete_dir_ignore_missing(build_dir)
 
     os.chdir(lvgl_test_dir)
+
+    if platform.system() != 'Windows':
+        gen_wayland_protocols(clean)
+
     created_build_dir = False
     if not os.path.isdir(build_dir):
         os.mkdir(build_dir)
         created_build_dir = True
     os.chdir(build_dir)
     if created_build_dir:
-        subprocess.check_call(['cmake', '-DCMAKE_BUILD_TYPE=%s' % build_type,
+        subprocess.check_call(['cmake', '-GNinja', '-DCMAKE_BUILD_TYPE=%s' % build_type,
                                '-D%s=1' % options_name, '..'])
     subprocess.check_call(['cmake', '--build', build_dir,
                            '--parallel', str(os.cpu_count())])
 
 
-def run_tests(options_name):
+def run_tests(options_name, test_suite):
     '''Run the tests for the given options name.'''
 
     print()
@@ -101,8 +150,15 @@ def run_tests(options_name):
     print('=' * len(label), flush=True)
 
     os.chdir(get_build_dir(options_name))
-    subprocess.check_call(
-        ['ctest', '--timeout', '30', '--parallel', str(os.cpu_count()), '--output-on-failure'])
+    args = [
+        'ctest',
+        '--timeout', '300',
+        '--parallel', str(os.cpu_count()),
+        '--output-on-failure',
+    ]
+    if test_suite is not None:
+        args.extend(["--tests-regex", test_suite])
+    subprocess.check_call(args)
 
 
 def generate_code_coverage_report():
@@ -125,10 +181,35 @@ def generate_code_coverage_report():
     cmd = ['gcovr', '--root', root_dir, '--html-details', '--output',
            html_report_file, '--xml', 'report/coverage.xml',
            '-j', str(os.cpu_count()), '--print-summary',
-           '--html-title', 'LVGL Test Coverage', '--filter', '../src/.*/lv_.*\.c']
+           '--html-title', 'LVGL Test Coverage', '--filter', r'../src/.*/lv_.*\.c']
 
     subprocess.check_call(cmd)
     print("Done: See %s" % html_report_file, flush=True)
+
+
+def generate_test_images():
+    invalids = (ColorFormat.UNKNOWN,ColorFormat.RAW,ColorFormat.RAW_ALPHA)
+    formats = [i for i in ColorFormat if i not in invalids]
+    png_path = os.path.join(lvgl_test_dir, "test_images/pngs")
+    pngs = list(Path(png_path).rglob("*.[pP][nN][gG]"))
+    print(f"png files: {pngs}")
+
+    align_options = [1, 64]
+
+    for align in align_options:
+        for compress in CompressMethod:
+            compress_name = compress.name if compress != CompressMethod.NONE else "UNCOMPRESSED"
+            outputs = os.path.join(lvgl_test_dir, f"test_images/stride_align{align}/{compress_name}/")
+            os.makedirs(outputs, exist_ok=True)
+            for fmt in formats:
+                for png in pngs:
+                    img = LVGLImage().from_png(png, cf=fmt, background=0xffffff)
+                    img.adjust_stride(align=16)
+                    output = os.path.join(outputs, f"{Path(png).stem}_{fmt.name}.bin")
+                    img.to_bin(output, compress=compress)
+                    output = os.path.join(outputs, f"{Path(png).stem}_{fmt.name}_{compress.name}_align{align}.c")
+                    img.to_c_array(output, compress=compress)
+                    print(f"converting {os.path.basename(png)}, format: {fmt.name}, compress: {compress_name}")
 
 
 if __name__ == "__main__":
@@ -151,8 +232,17 @@ if __name__ == "__main__":
                         help='generate code coverage report for tests.')
     parser.add_argument('actions', nargs='*', choices=['build', 'test'],
                         help='build: compile build tests, test: compile/run executable tests.')
+    parser.add_argument('--test-suite', default=None,
+                        help='select test suite to run')
+    parser.add_argument('--update-image', action='store_true', default=False,
+                        help='Update test image using LVGLImage.py script')
+    parser.add_argument('--auto-clean', action='store_true', default=False,
+                        help='Automatically clean build directories')
 
     args = parser.parse_args()
+
+    if args.update_image:
+        generate_test_images()
 
     if args.build_options:
         options_to_build = args.build_options
@@ -171,9 +261,13 @@ if __name__ == "__main__":
         build_tests(options_name, build_type, args.clean)
         if is_test:
             try:
-                run_tests(options_name)
+                run_tests(options_name, args.test_suite)
             except subprocess.CalledProcessError as e:
                 sys.exit(e.returncode)
+        if args.auto_clean:
+            build_dir = get_build_dir(options_name)
+            print("Removing " + build_dir)
+            shutil. rmtree(build_dir)
 
     if args.report:
         generate_code_coverage_report()

@@ -15,13 +15,24 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#define	ILI9341	0		//do not edit!!!
+#define ST7789	1		//do not edit!!!
+
+/* user options */
+#define ACTIVE_DISPLAY	ILI9341 //select active display driver
+#define DISP_HOR_RES	320		//select display resolution
+#define DISP_VER_RES	240
+
+#include "display.h"
+#if ACTIVE_DISPLAY == ILI9341
+#include "ili9341.h"
+#elif ACTIVE_DISPLAY == ST7789
+#include "st7789.h"
+#endif
 #include <stdlib.h>
 #include "../../lvgl/lvgl.h"
 #include "../../lvgl/examples/lv_examples.h"
-
-#include "display.h"
-#include "lcd_lvgl.h"
-
+#include "ui.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,7 +52,12 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+#define BYTES_PER_PIXEL (LV_COLOR_FORMAT_GET_SIZE(LV_COLOR_FORMAT_RGB565))
 
+static uint8_t buf1[DISP_HOR_RES * 10 * BYTES_PER_PIXEL];
+static uint8_t buf2[DISP_HOR_RES * 10 * BYTES_PER_PIXEL];
+
+volatile uint32_t millis = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -52,79 +68,23 @@ static void MX_SPI1_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
-
-static void anim_x_cb(void * var, int32_t v)
+void my_flush_cb(lv_display_t *display, const lv_area_t *area, uint8_t *px_map)
 {
-    lv_obj_set_x(var, v);
+	int w = area->x2 - area->x1 + 1;
+	int h = area->y2 - area->y1 + 1;
+	LCD_DrawImage(LCD, area->x1, area->y1, w, h, (uint16_t*)px_map, 1);
+    lv_display_flush_ready(display);
 }
 
-static void anim_size_cb(void * var, int32_t v)
+static uint32_t my_tick_cb(void)
 {
-    lv_obj_set_size(var, v, v);
-}
-
-/**
- * Create a playback animation
- */
-void lv_example_anim_2(void)
-{
-
-    lv_obj_t * obj = lv_obj_create(lv_scr_act());
-    lv_obj_set_style_bg_color(obj, lv_palette_main(LV_PALETTE_RED), 0);
-    lv_obj_set_style_radius(obj, LV_RADIUS_CIRCLE, 0);
-
-    lv_obj_align(obj, LV_ALIGN_LEFT_MID, 10, 0);
-
-    lv_anim_t a;
-    lv_anim_init(&a);
-    lv_anim_set_var(&a, obj);
-    lv_anim_set_values(&a, 10, 50);
-    lv_anim_set_time(&a, 1000);
-    lv_anim_set_playback_delay(&a, 100);
-    lv_anim_set_playback_time(&a, 300);
-    lv_anim_set_repeat_delay(&a, 500);
-    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
-    lv_anim_set_path_cb(&a, lv_anim_path_ease_in_out);
-
-    lv_anim_set_exec_cb(&a, anim_size_cb);
-    lv_anim_start(&a);
-    lv_anim_set_exec_cb(&a, anim_x_cb);
-    lv_anim_set_values(&a, 10, 240);
-    lv_anim_start(&a);
-}
-
-static void set_angle(void * obj, int32_t v)
-{
-    lv_arc_set_value((lv_obj_t *)obj, v);
-}
-
-void lv_example_arc_2(void)
-{
-    /*Create an Arc*/
-    lv_obj_t * arc = lv_arc_create(lv_scr_act());
-    lv_arc_set_rotation(arc, 270);
-    lv_arc_set_bg_angles(arc, 0, 360);
-    lv_obj_remove_style(arc, NULL, LV_PART_KNOB);   /*Be sure the knob is not displayed*/
-    //lv_obj_remove_flag(arc, LV_OBJ_FLAG_CLICKABLE);  /*To not allow adjusting by click*/
-    lv_obj_center(arc);
-
-    lv_anim_t a;
-    lv_anim_init(&a);
-    lv_anim_set_var(&a, arc);
-    lv_anim_set_exec_cb(&a, set_angle);
-    lv_anim_set_time(&a, 1000);
-    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);    /*Just for the demo*/
-    lv_anim_set_repeat_delay(&a, 500);
-    lv_anim_set_values(&a, 0, 100);
-    lv_anim_start(&a);
-
+    return millis;
 }
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-volatile uint32_t millis = 0;
 /* USER CODE END 0 */
 
 /**
@@ -168,20 +128,67 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
+  LCD_DMA_TypeDef dma_tx = { DMA2,
+  		  	  	  	  	     2,   };
+  LCD_BackLight_data bkl_data = { TIM3,
+		  	  	  	  	  	  	  TIM_CCER_CC1E,
+  								  0,
+  								  0,
+  								  90  };
+  LCD_SPI_Connected_data spi_con = { SPI1,
+  		  	  	  	  	  	  	  	 dma_tx,
+  									 LCD_RES_GPIO_Port,
+  									 LCD_RES_Pin,
+  									 LCD_DC_GPIO_Port,
+  									 LCD_DC_Pin,
+  									 LCD_CS_GPIO_Port,
+  									 LCD_CS_Pin         };
+
+  LCD = LCD_DisplayAdd(LCD,
+   	   	   	   		   DISP_HOR_RES,
+					   DISP_VER_RES,
+#if ACTIVE_DISPLAY == ILI9341
+					   ILI9341_CONTROLLER_WIDTH,
+					   ILI9341_CONTROLLER_HEIGHT,
+#elif ACTIVE_DISPLAY == ST7789
+					 ST7789_CONTROLLER_WIDTH,
+					 ST7789_CONTROLLER_HEIGHT,
+#endif
+					   0,
+					   0,
+					   PAGE_ORIENTATION_LANDSCAPE,
+#if ACTIVE_DISPLAY == ILI9341
+					   ILI9341_Init,
+					   ILI9341_SetWindow,
+					   ILI9341_SleepIn,
+					   ILI9341_SleepOut,
+#elif ACTIVE_DISPLAY == ST7789
+					   ST7789_Init,
+					   ST7789_SetWindow,
+					   ST7789_SleepIn,
+					   ST7789_SleepOut,
+#endif
+					   &spi_con,
+					   LCD_DATA_16BIT_BUS,
+					   bkl_data				   );
+  LCD_Init(LCD);
+
   lv_init();
-  Display_init(0);
+  lv_tick_set_cb(my_tick_cb);
+  lv_display_t * display1 = lv_display_create(DISP_HOR_RES, DISP_VER_RES);
+  lv_display_set_buffers(display1, buf1, buf2, DISP_HOR_RES * 10, LV_DISPLAY_RENDER_MODE_PARTIAL);
+  lv_display_set_flush_cb(display1, my_flush_cb);
+
+  ui_init();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  lv_example_arc_2();
-
   while (1)
   {
-	  LCD_DelayMs(1);
-  	  lv_task_handler();
+	  lv_timer_handler();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

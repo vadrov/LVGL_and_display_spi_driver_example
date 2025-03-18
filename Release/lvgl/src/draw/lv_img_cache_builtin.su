@@ -1,4 +1,0 @@
-../lvgl/src/draw/lv_img_cache_builtin.c:173:13:lv_img_cache_set_size_builtin	0	static
-../lvgl/src/draw/lv_img_cache_builtin.c:204:13:lv_img_cache_invalidate_src_builtin	0	static
-../lvgl/src/draw/lv_img_cache_builtin.c:87:32:_lv_img_cache_open_builtin	24	static
-../lvgl/src/draw/lv_img_cache_builtin.c:61:6:_lv_img_cache_builtin_init	24	static

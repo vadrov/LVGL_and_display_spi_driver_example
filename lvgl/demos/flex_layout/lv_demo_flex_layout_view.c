@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file lv_demo_flex_layout_view.c
  *
  */
@@ -9,7 +9,7 @@
 
 #include "lv_demo_flex_layout_main.h"
 
-#if LV_USE_DEMO_FLEX_LAYOUT && LV_USE_USER_DATA
+#if LV_USE_DEMO_FLEX_LAYOUT
 
 /*********************
  *      DEFINES
@@ -58,7 +58,7 @@ void view_create(lv_obj_t * par, view_t * ui)
     ui->root = obj_child_node_create(par, ui);
     lv_obj_set_size(ui->root, lv_pct(50), lv_pct(80));
 
-    /* mian ctrl_pad */
+    /* main ctrl_pad */
     lv_obj_t * obj = lv_obj_create(par);
     lv_obj_set_size(obj, lv_pct(40), lv_pct(80));
     lv_obj_set_style_pad_all(obj, 0, 0);
@@ -68,8 +68,8 @@ void view_create(lv_obj_t * par, view_t * ui)
     lv_obj_set_style_border_width(obj, 0, 0);
     lv_obj_set_style_shadow_color(obj, lv_color_hex3(0xaaa), 0);
     lv_obj_set_style_shadow_width(obj, 20, 0);
-    lv_obj_set_style_shadow_ofs_y(obj, 2, 0);
-    lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_style_shadow_offset_y(obj, 2, 0);
+    lv_obj_remove_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_flex_flow(obj, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(
         obj,
@@ -101,7 +101,7 @@ void view_create(lv_obj_t * par, view_t * ui)
     ui->ctrl_pad.btn.add = btn_create(obj, "Add", lv_palette_main(LV_PALETTE_BLUE_GREY));
     ui->ctrl_pad.btn.remove = btn_create(obj, "Remove", lv_palette_main(LV_PALETTE_RED));
 
-    lv_event_send(ui->root, LV_EVENT_CLICKED, NULL); /*Make it active by default*/
+    lv_obj_send_event(ui->root, LV_EVENT_CLICKED, NULL); /*Make it active by default*/
 
     /* fade effect */
     lv_obj_fade_in(ui->root, 600, 0);
@@ -114,7 +114,7 @@ void view_create(lv_obj_t * par, view_t * ui)
 
 static lv_obj_t * btn_create(lv_obj_t * par, const char * str, lv_color_t color)
 {
-    lv_obj_t * btn = lv_btn_create(par);
+    lv_obj_t * btn = lv_button_create(par);
     lv_obj_set_width(btn, lv_pct(30));
     lv_obj_set_height(btn, 30);
     lv_obj_set_style_border_width(btn, 0, LV_PART_MAIN);
@@ -131,7 +131,7 @@ static lv_obj_t * btn_create(lv_obj_t * par, const char * str, lv_color_t color)
 static void obj_child_node_def_style_init(lv_style_t * style)
 {
     lv_style_init(style);
-    lv_style_set_size(style, LV_PCT(30), LV_PCT(30));
+    lv_style_set_size(style, LV_PCT(45), LV_PCT(45));
     lv_style_set_flex_flow(style, LV_FLEX_FLOW_ROW);
     lv_style_set_layout(style, LV_LAYOUT_FLEX);
     lv_style_set_radius(style, 0);
