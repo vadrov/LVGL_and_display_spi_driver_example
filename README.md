@@ -113,7 +113,7 @@ int main(void)
 ```
 ui_init() is a procedure that creates LVGL objects, their animations and interactions with them (events). See "ui" folder. The interface can be prepared, for example, in SquareLine Studio.
 
-##In the project properties, define the LV_LVGL_H_INCLUDE_SIMPLE symbol (Project -> Properties -> C/C++ Build -> Settings -> MCU GCC Compiler -> Preprocessor -> Define symbols (-D) Add... LV_LVGL_H_INCLUDE_SIMPLE).
+## In the project properties, define the LV_LVGL_H_INCLUDE_SIMPLE symbol (Project -> Properties -> C/C++ Build -> Settings -> MCU GCC Compiler -> Preprocessor -> Define symbols (-D) Add... LV_LVGL_H_INCLUDE_SIMPLE).
 
 ![Image](https://github.com/user-attachments/assets/a7cfbe5c-1541-43c0-ac6e-e1441b480f71)
 
