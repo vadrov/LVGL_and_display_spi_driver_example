@@ -1,5 +1,0 @@
-../lvgl/src/draw/sw/lv_draw_sw_utils.c:129:6:lv_draw_sw_i1_to_argb8888	36	static
-../lvgl/src/draw/sw/lv_draw_sw_utils.c:149:6:lv_draw_sw_rgb565_swap	32	static
-../lvgl/src/draw/sw/lv_draw_sw_utils.c:183:6:lv_draw_sw_i1_invert	0	static
-../lvgl/src/draw/sw/lv_draw_sw_utils.c:214:6:lv_draw_sw_i1_convert_to_vtiled	48	static
-../lvgl/src/draw/sw/lv_draw_sw_utils.c:243:6:lv_draw_sw_rotate	24	static

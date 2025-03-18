@@ -31,7 +31,6 @@
 #endif
 #include <stdlib.h>
 #include "../../lvgl/lvgl.h"
-#include "../../lvgl/examples/lv_examples.h"
 #include "ui.h"
 /* USER CODE END Includes */
 

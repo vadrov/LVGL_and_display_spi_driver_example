@@ -1,4 +1,0 @@
-../lvgl/src/themes/mono/lv_theme_mono.c:232:13:theme_apply	34
-../lvgl/src/themes/mono/lv_theme_mono.c:183:6:lv_theme_mono_is_inited	2
-../lvgl/src/themes/mono/lv_theme_mono.c:190:6:lv_theme_mono_deinit	4
-../lvgl/src/themes/mono/lv_theme_mono.c:206:14:lv_theme_mono_init	44

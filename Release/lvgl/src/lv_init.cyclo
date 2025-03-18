@@ -1,3 +1,0 @@
-../lvgl/src/lv_init.c:155:6:lv_is_initialized	1
-../lvgl/src/lv_init.c:165:6:lv_init	2
-../lvgl/src/lv_init.c:384:6:lv_deinit	3
