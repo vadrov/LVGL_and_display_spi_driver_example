@@ -107,6 +107,7 @@ int main(void)
     ui_init();
     while (1) { //infinity loop
         lv_timer_handler();
+        LCD_DelayMs(1);
     }
 }
 ```
